@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  db:
+    image: mysql
+    container_name: mysql_docker_jee
+    restart: always
+    ports:
+      - "3308:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cards
+  tomcat:
+    build: docker/tomcat
+    container_name: tomcat_docker_jee
+    ports:
+      - "8888:8080"
+    environment:
+      - SPRING_DATABASE_URL=mysql_docker_jee:3306
+    volumes:
+      - ./backend/target/backend.war:/usr/local/tomcat/webapps/backend.war
+    depends_on:
+      - db
+#  phpmyadmin:
+#    image: phpmyadmin
+#    container_name: phpmyadmin_docker_jee
+#    restart: always
+#    depends_on:
+#      - db
+#    ports:
+#      - "8081:80"
+#    environment:
+#      PMA_HOST: db
+#  keycloak:
+#    container_name: keycloak_docker_jee
+#    image: quay.io/keycloak/keycloak
+#    ports:
+#      - "8180:8080"
+#    volumes:
+#      - ./backend/keycloak:/opt/jboss/keycloak/imports
+#    environment:
+#      - KEYCLOAK_USER=admin
+#      - KEYCLOAK_PASSWORD=admin
+#      - KEYCLOAK_IMPORT=/opt/jboss/keycloak/imports/cards-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
+#    restart: unless-stopped
+  web:
+    container_name: frontend_docker_jee
+    build: frontend
+    user : 1000:1000
+    volumes:
+        - ./frontend:/usr/src/app
+    ports:
+      - "3000:3000"
+
+volumes:
+  db-data:
