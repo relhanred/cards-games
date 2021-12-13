@@ -51,6 +51,8 @@ public class UserService implements UserDetailsService {
 
     public User findByEmail(String email) {return userRepository.findByEmail(email);}
 
+    public User findByPseudo(String pseudo) {return userRepository.findByPseudo(pseudo);}
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 

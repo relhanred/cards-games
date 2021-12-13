@@ -3,7 +3,17 @@ module.exports = {
     "./src/**/*.{js,jsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'midnight': '#312E81',
+      },
+      fontFamily: {
+        'raleway-sf': ['Raleway', 'sans-serif'],
+      },
+      height: {
+        '92vh': '92vh'
+      }
+    },
   },
   plugins: [],
 }

@@ -50,10 +50,22 @@ public class UserController {
     }
 
     @PostMapping(value = "/auth/add")
-    public ResponseEntity<User> addUser(@RequestBody LoginForm userForm) {
+    public ResponseEntity<ApiResult> addUser(@RequestBody LoginForm userForm) {
         User user = new User(userForm.getEmail(), userForm.getPassword(), userForm.getPseudo());
-        User newUser = userService.addUser(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        ApiResult apiResult = new ApiResult<>();
+        if(userService.findByEmail(user.getEmail()) != null || userService.findByPseudo(user.getPseudo()) != null) {
+            if(userService.findByEmail(user.getEmail()) != null) {
+                apiResult.setMessage("L'adresse email existe déjà !");
+            }else {
+                apiResult.setMessage("Le pseudo existe déjà !");
+            }
+            apiResult.setHttpStatus(HttpStatus.UNAUTHORIZED);
+            return  new ResponseEntity<>(apiResult, HttpStatus.UNAUTHORIZED);
+        }
+        userService.addUser(user);
+        apiResult.setMessage("Votre compte a bien été crée ! Connectez vous !");
+        apiResult.setHttpStatus(HttpStatus.CREATED);
+        return new ResponseEntity<>(apiResult, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/addAdmin")
@@ -80,7 +92,7 @@ public class UserController {
                 jwtResponse = new JwtResponse(jwt, user.getId(), user.getUsername(), user.getEmail(),roles);
                 apiResult.setResult(jwtResponse);
                 apiResult.setStatus(true);
-                apiResult.setMessage("Vous êtes connecté !");
+                apiResult.setMessage(user.getPseudo());
                 apiResult.setHttpStatus(HttpStatus.OK);
             }
         }catch (AuthenticationException e) {

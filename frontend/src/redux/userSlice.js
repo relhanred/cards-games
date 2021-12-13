@@ -4,6 +4,10 @@ export const userSlice = createSlice({
   name: 'user',
   initialState: {
     isConnected: false,
+    user : {
+      email: "",
+      pseudo: "",
+    }
   },
   reducers: {
     setConnected: (state) => {
@@ -12,9 +16,21 @@ export const userSlice = createSlice({
     setDisconnected: (state) => {
       state.isConnected = false
     },
+    setUserEmail: (state, email) => {
+      state.user.email = email.payload
+    },
+    setUserPseudo: (state, pseudo) => {
+      state.user.pseudo = pseudo.payload
+    },
+    unsetUser:(state) => {
+      state.user = {
+        email : "",
+        pseudo: "",
+      }
+    }
   },
 })
 
-export const { setConnected, setDisconnected} = userSlice.actions
+export const { setConnected, setDisconnected,setUserEmail, setUserPseudo, unsetUser} = userSlice.actions
 
 export default userSlice.reducer
