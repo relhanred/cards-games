@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Error from './components/Error'
 import Register from './components/Register';
+import Params from './components/Params';
 import { useSelector } from 'react-redux'
 
 function App() {
@@ -26,6 +27,11 @@ function App() {
           {
             !isConnected && (
               <Route exact path="/register" element={<Register />} />
+            )
+          }
+          {
+            !isConnected && (
+              <Route exatc path="/params/:title" element={<Params />} />
             )
           }
           <Route path="*" element={<Error />} />
