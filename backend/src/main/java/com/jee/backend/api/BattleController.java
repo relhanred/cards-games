@@ -1,5 +1,6 @@
 package com.jee.backend.api;
 
+import com.jee.backend.forms.BlackJackInitForm;
 import com.jee.backend.forms.InitForm;
 import com.jee.backend.model.*;
 import com.jee.backend.service.*;
@@ -14,50 +15,52 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @RestController
-@RequestMapping("/shifumi")
+@RequestMapping("/battle")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class ShifumiController {
+public class BattleController {
 
-    private final ShifumiService shifumiService;
-
-    private final GameService gameService;
 
     private final PlayerService playerService;
 
-    private final CardService cardService;
+    private final GameService gameService;
 
     private final UserService userService;
 
-    public ShifumiController(GameService gameService, PlayerService playerService, CardService cardService, ShifumiService shifumiService, UserService userService) {
-        this.shifumiService = shifumiService;
-        this.gameService = gameService;
+    private final BattleService battleService;
+
+    private final CardService cardService;
+
+    public BattleController(PlayerService playerService, GameService gameService, UserService userService, BattleService battleService, CardService cardService) {
         this.playerService = playerService;
-        this.cardService = cardService;
+        this.gameService = gameService;
         this.userService = userService;
+        this.battleService = battleService;
+        this.cardService = cardService;
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = "application/json")
     public ResponseEntity<ApiResult<Game>> createGame(@RequestBody InitForm initForm) {
-        GameType gameName = GameType.CHIFUMI;
+        GameType gameName = GameType.BATTLE;
         List<Player> playerList = new ArrayList<>();
-        List<Card> hand = shifumiService.initPlayerHand();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         ApiResult<Game> apiResult = new ApiResult<>();
-        if (auth.getPrincipal() == "anonymousUser") {
+        if(auth.getPrincipal() == "anonymousUser") {
             apiResult.setResult(null);
             apiResult.setStatus(false);
             apiResult.setMessage("Vous devez être connecté pour créer une partie");
             return new ResponseEntity<>(apiResult, HttpStatus.FORBIDDEN);
         }
         User user = (User) auth.getPrincipal();
-        UserDetails newUser = userService.loadUserByUsername(user.getEmail());
+        UserDetails newUser =  userService.loadUserByUsername(user.getEmail());
         int score = 0;
+        List<Card> hand = gameService.generateDeck();
         Player player = new Player((User) newUser, hand, score);
         playerList.add(player);
         int maxPlayers = 2;
-        if (initForm.ia) {
-            hand = shifumiService.initPlayerHand();
+        if(initForm.ia) {
+            hand = gameService.generateDeck();
             player = new Player(null, hand, score);
             playerList.add(player);
         }
@@ -68,22 +71,15 @@ public class ShifumiController {
         return new ResponseEntity<>(apiResult, HttpStatus.CREATED);
     }
 
-
-    @GetMapping("/game/all")
-    public ResponseEntity<List<Game>> getAllGames() {
-        List<Game> shifumiGames = gameService.findGamesByGameType(GameType.CHIFUMI);
-        return new ResponseEntity<>(shifumiGames, HttpStatus.OK);
-    }
-
     @PostMapping("/join/{gameId}")
     public ResponseEntity<Game> joinGame(@PathVariable("gameId") Long gameId) {
         Game game = gameService.findGame(gameId);
-        if (game.getPlayerList().size() < game.getMaxPlayers()) {
+        if(game.getPlayerList().size() < game.getMaxPlayers()) {
             int score = 0;
-            List<Card> hand = shifumiService.initPlayerHand();
+            List<Card> hand = gameService.generateDeck();
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
-            UserDetails newUser = userService.loadUserByUsername(user.getEmail());
+            UserDetails newUser =  userService.loadUserByUsername(user.getEmail());
             Player player = new Player((User) newUser, hand, score);
             List<Player> playerList = game.getPlayerList();
             playerList.add(player);
@@ -96,19 +92,17 @@ public class ShifumiController {
 
     @PostMapping(value = "/game/{gameId}/play", consumes = "application/json")
     @ResponseBody
-    public ApiResult<Game> getWinner(@PathVariable("gameId") Long gameId, @RequestBody List<Symbol> symbolList) {
+    public ApiResult<Game> getWinner(@PathVariable("gameId") Long gameId, @RequestBody List<Card> cardList) {
         Game game = gameService.findGame(gameId);
         ApiResult<Game> apiResult = new ApiResult();
         List<Player> playerList = game.getPlayerList();
-        Card firstPlayerCard = cardService.getCardBySymbol(playerList.get(0).getHand(), symbolList.get(0));
-        Card secondPlayerCard = cardService.getCardBySymbol(playerList.get(1).getHand(), symbolList.get(1));
-        if (firstPlayerCard == null || secondPlayerCard == null) {
+        if (cardList.get(0) == null || cardList.get(1) == null) {
             apiResult.setMessage("Error with cards : atleast one card is null");
             apiResult.setStatus(false);
             apiResult.setHttpStatus(HttpStatus.BAD_REQUEST);
             return apiResult;
         }
-        int result = shifumiService.turnWinner(firstPlayerCard, secondPlayerCard);
+        int result = battleService.turnWinner(cardList.get(0), cardList.get(1));
         if (result != -1) {
             Player firstPlayer = playerList.get(0);
             Player secondPlayer = playerList.get(1);
@@ -129,10 +123,19 @@ public class ShifumiController {
         if (game.getManche() < game.getMaxManche()) {
             game.setManche(game.getManche() + 1);
         }
+        cardService.deleteCard(cardList.get(0).getId());
+        cardService.deleteCard(cardList.get(1).getId());
         gameService.updateGame(game);
         apiResult.setStatus(true);
         apiResult.setResult(game);
         apiResult.setHttpStatus(HttpStatus.OK);
         return apiResult;
     }
+
+    @GetMapping("/game/all")
+    public ResponseEntity<List<Game>> getAllGames() {
+        List<Game> blackJackGames = gameService.findGamesByGameType(GameType.BATTLE);
+        return new ResponseEntity<>(blackJackGames, HttpStatus.OK);
+    }
+
 }

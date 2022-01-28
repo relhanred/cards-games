@@ -3,7 +3,7 @@ import blackjack from '../Assets/blackjack.png'
 import bataille from '../Assets/bataille.png'
 import shifumi from '../Assets/chifumi2.png'
 import { useNavigate } from 'react-router';
-import Card from './Card';
+import Card from '../components/Card';
 
 function Home(props) {
 
@@ -17,7 +17,7 @@ function Home(props) {
                     <Card name="Blackjack" image={blackjack} route="/params/blackjack" />
                     <Card name="Bataille" image={bataille} route="/params/bataille" />
 
-                    <div className="flex flex-col bg-gray-900  group relative shadow-lg rounded p-3" onClick={() => navigate('/params/blackjack')}>
+                    <div className="flex flex-col bg-gray-900  group relative shadow-lg rounded p-3" onClick={() => navigate('/params/shifumi')}>
                         <div className="p-5 mx-auto">
                             <h1 className="text-white text-5xl">Chi-Fu-Mi</h1>
                         </div>

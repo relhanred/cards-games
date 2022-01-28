@@ -1,11 +1,7 @@
 package com.jee.backend.forms;
 
-public class BlackJackInitForm {
-
-    public int maxPlayers;
-
+public class InitForm {
     public int manche;
 
     public boolean ia;
-
 }

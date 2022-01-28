@@ -1,9 +1,6 @@
 package com.jee.backend.service;
 
-import com.jee.backend.model.Card;
-import com.jee.backend.model.Color;
-import com.jee.backend.model.Game;
-import com.jee.backend.model.Symbol;
+import com.jee.backend.model.*;
 import com.jee.backend.repository.GameRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,25 +13,48 @@ import java.util.Random;
 public class BlackJackService {
 
 
-    private GameService gameService;
+    private final GameService gameService;
 
-    private CardService cardService;
+    private final PlayerService playerService;
 
 
-    public BlackJackService(CardService cardService, GameService gameService) {
-        this.cardService = cardService;
+    public BlackJackService(GameService gameService, PlayerService playerService) {
         this.gameService = gameService;
+        this.playerService = playerService;
     }
 
-    public Card distributeCard(Long gameId) {
-        Game game = gameService.findGame(gameId);
+    public List<Card> distributeCard(Game game, Player player, int nbCard) {
         List<Card> deck = game.getDeck();
-        int random = new Random().nextInt(deck.size());
-        Card card = deck.get(random);
-        deck.remove(card);
-        cardService.deleteCard(card.getId());
-        game.setDeck(deck);
-        gameService.updateGame(game);
-        return card;
+        List<Player> playerList = game.getPlayerList();
+
+
+        for(int i = 0; i < playerList.size(); i++) {
+            if(playerList.get(i).getId() == player.getId()) {
+                List<Card> cardList = playerList.get(i).getHand();
+                int score = playerList.get(i).getScore();
+                for(int j = 0; j < nbCard; j++) {
+                    int random = new Random().nextInt(deck.size());
+                    Card card = deck.get(random);
+                    int cardScore = card.getNumber();
+                    if(card.getNumber() > 1 && card.getNumber() < 10) {
+                        score += cardScore;
+                    }else if(card.getNumber() > 10) {
+                        score += 10;
+                    }else {
+                        if((score + 10) > 21) {
+                            score += 1;
+                        }else {
+                            score += 10;
+                        }
+                    }
+                    deck.remove(card);
+                    cardList.add(card);
+                }
+                playerList.get(i).setHand(cardList);
+                playerList.get(i).setScore(score);
+                playerService.updatePlayer(player);
+            }
+        }
+        return deck;
     }
 }

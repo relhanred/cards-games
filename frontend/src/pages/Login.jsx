@@ -19,10 +19,9 @@ function Login() {
         AuthService.login(loginForm)
             .then(e => {
                 if (e.status === 401) {
-                    setError(e.data.message);
+                    setError("Adresse email ou mot de passe incorrect !");
                 }
                 else {
-                    console.log(e);
                     dispatch(setUserPseudo(e.data.message));
                     dispatch(setUserEmail(e.data.result.email));
                     dispatch(setConnected());
@@ -33,19 +32,18 @@ function Login() {
 
     return (
         <div className="h-92vh w-full bg-gray-100 flex justify-center overflow-hidden">
-            <div className="py-6 px-8 h-5/6 w-4/12 mt-auto mb-auto bg-white rounded shadow-xl">
+            <div className="p-8 h-fit w-4/12 mt-auto mb-auto bg-white rounded-xl shadow-xl">
+                <h1 className="text-4xl text-gray-600 text-center font-bold font-sans mb-6">Connexion</h1>
                 <form onSubmit={(e) => handleSubmit(e)}>
-                    <div className="mb-6">
-                        <label className="block text-gray-800 font-bold">Adresse email:</label>
+                    <div className="my-6">
                         <input type="text" className="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600 :ring-indigo-600" autoComplete="off" onChange={e => setLoginForm({ ...loginForm, email: e.target.value })} value={loginForm.email} id="email" placeholder="Adresse email" />
                     </div>
 
                     <div>
-                        <label className="block text-gray-800 font-bold">Mot de passe:</label>
                         <input type="password" className="w-full border border-gray-300 py-2 pl-3 rounded mt-2 outline-none focus:ring-indigo-600 :ring-indigo-600" autoComplete="off" onChange={e => setLoginForm({ ...loginForm, password: e.target.value })} value={loginForm.password} id="password" placeholder="Mot de passe" />
-                        <p className="text-red-500 text-xs italic">{error}</p>
+                        <p className="text-red-500 text-xs italic pt-2">{error}</p>
                     </div>
-                    <input className="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded" type="submit" value="Se connecter" />
+                    <input className="cursor-pointer py-2 px-4 block mt-6 bg-indigo-500 text-white font-bold w-full text-center rounded-xl" type="submit" value="Se connecter" />
                 </form>
             </div>
         </div>

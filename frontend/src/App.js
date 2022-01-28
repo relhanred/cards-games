@@ -1,11 +1,12 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar';
-import Login from './components/Login';
-import Home from './components/Home';
+import Login from './pages/Login';
+import Home from './pages/Home';
 import Error from './components/Error'
-import Register from './components/Register';
-import Params from './components/Params';
+import Register from './pages/Register';
+import Params from './pages/Params';
+import Game from './pages/Game';
 import { useSelector } from 'react-redux'
 
 function App() {
@@ -29,11 +30,8 @@ function App() {
               <Route exact path="/register" element={<Register />} />
             )
           }
-          {
-            !isConnected && (
-              <Route exatc path="/params/:title" element={<Params />} />
-            )
-          }
+          <Route exact path="/params/:title" element={<Params />} />
+          <Route exact path="/game/:game/:id" element={<Game />} />
           <Route path="*" element={<Error />} />
         </Routes>
       </Router>
