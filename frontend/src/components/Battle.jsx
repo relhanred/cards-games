@@ -11,6 +11,7 @@ function Battle(props) {
     const [game, setGame] = useState(null);
     const [firstPlayerCard, setFirstPlayerCard] = useState(null);
     const [secondPlayerCard, setSecondPlayerCard] = useState(null);
+    const [winner, setWinner] = useState("");
 
     useEffect(() => {
 
@@ -36,8 +37,23 @@ function Battle(props) {
             BattleService.play(params.id, playerCardList).then(e => {
                 if (e.status == 200) {
                     setGame(e.data.result)
+                    if(e.data.result.manche == e.data.result.maxManche) {
+                        winnerResult(e.data.result.winner);
+                    }
                 }
             })
+        }
+    }
+
+    const winnerResult = (winner) => {
+        if (winner != null) {
+            if (winner.user != null) {
+                setWinner(winner.user.pseudo + " a gagné la partie !")
+            } else {
+                setWinner(" L'ordinateur a gagné la partie !")
+            }
+        } else {
+            setWinner("Match nul !")
         }
     }
 
@@ -70,7 +86,7 @@ function Battle(props) {
                                 <div className="flex font-bold  text-3xl mr-6"><span className="w-fit">Commencez à jouer !</span></div>
                                 :
                                 (game.manche >= game.maxManche &&
-                                    <div className="flex justify-center items-center"><div className="flex font-bold w-full justify-center items-center text-3xl py-4"><span className="w-fit">Ordinateur a gagné la partie !</span></div></div>
+                                    <div className="flex justify-center items-center"><div className="flex font-bold w-full justify-center items-center text-3xl py-4"><span className="w-fit">{winner}</span></div></div>
                                 )
                         }
 

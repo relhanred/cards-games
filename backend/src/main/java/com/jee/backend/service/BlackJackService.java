@@ -26,8 +26,6 @@ public class BlackJackService {
     public List<Card> distributeCard(Game game, Player player, int nbCard) {
         List<Card> deck = game.getDeck();
         List<Player> playerList = game.getPlayerList();
-
-
         for(int i = 0; i < playerList.size(); i++) {
             if(playerList.get(i).getId() == player.getId()) {
                 List<Card> cardList = playerList.get(i).getHand();

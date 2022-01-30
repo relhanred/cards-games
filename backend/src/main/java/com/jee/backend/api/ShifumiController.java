@@ -55,13 +55,10 @@ public class ShifumiController {
         int score = 0;
         Player player = new Player((User) newUser, hand, score);
         playerList.add(player);
-        int maxPlayers = 2;
-        if (initForm.ia) {
-            hand = shifumiService.initPlayerHand();
-            player = new Player(null, hand, score);
-            playerList.add(player);
-        }
-        Game game = gameService.createGame(new Game(gameName, null, playerList, maxPlayers, initForm.manche, 0, initForm.ia));
+        hand = shifumiService.initPlayerHand();
+        player = new Player(null, hand, score);
+        playerList.add(player);
+        Game game = gameService.createGame(new Game(gameName, null, playerList,  initForm.manche, 0, GameStatus.CREATED));
         apiResult.setResult(game);
         apiResult.setStatus(true);
         apiResult.setMessage("Partie crée avec succès !");
@@ -69,29 +66,10 @@ public class ShifumiController {
     }
 
 
-    @GetMapping("/game/all")
+    @GetMapping("/admin/game/all")
     public ResponseEntity<List<Game>> getAllGames() {
         List<Game> shifumiGames = gameService.findGamesByGameType(GameType.CHIFUMI);
         return new ResponseEntity<>(shifumiGames, HttpStatus.OK);
-    }
-
-    @PostMapping("/join/{gameId}")
-    public ResponseEntity<Game> joinGame(@PathVariable("gameId") Long gameId) {
-        Game game = gameService.findGame(gameId);
-        if (game.getPlayerList().size() < game.getMaxPlayers()) {
-            int score = 0;
-            List<Card> hand = shifumiService.initPlayerHand();
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            UserDetails newUser = userService.loadUserByUsername(user.getEmail());
-            Player player = new Player((User) newUser, hand, score);
-            List<Player> playerList = game.getPlayerList();
-            playerList.add(player);
-            game.setPlayerList(playerList);
-            playerService.createPlayer(player);
-            gameService.updateGame(game);
-        }
-        return new ResponseEntity<>(game, HttpStatus.OK);
     }
 
     @PostMapping(value = "/game/{gameId}/play", consumes = "application/json")
@@ -125,6 +103,16 @@ public class ShifumiController {
         }
         if (result == -1) {
             game.setLastWinner(null);
+        }
+        if ((game.getManche() + 1) == game.getMaxManche()) {
+            game.setGameStatus(GameStatus.FINISHED);
+            if(game.getPlayerList().get(0).getScore() > game.getPlayerList().get(1).getScore()) {
+                game.setWinner(game.getPlayerList().get(0));
+            }else if(game.getPlayerList().get(0).getScore() < game.getPlayerList().get(1).getScore()) {
+                game.setWinner(game.getPlayerList().get(1));
+            }else {
+                game.setWinner(null);
+            }
         }
         if (game.getManche() < game.getMaxManche()) {
             game.setManche(game.getManche() + 1);

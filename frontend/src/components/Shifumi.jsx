@@ -30,11 +30,9 @@ function Shifumi() {
                 .play(params.id, symbolList)
                 .then(e => {
                     setGame(e.data.result);
-                    console.log(e)
-                    if(e.data.result.manche === e.data.result.maxManche) {
-                        console.log(e.data)
-                        winnerResult(e.data.result.playerList)
-                    }else {
+                    if (e.data.result.manche === e.data.result.maxManche) {
+                        winnerResult(e.data.result.winner)
+                    } else {
                         if (e.data.result.lastWinner != null) {
                             if (e.data.result.lastWinner.user != null) {
                                 setWinner(e.data.result.lastWinner.user.pseudo + " a gagné la manche")
@@ -53,21 +51,14 @@ function Shifumi() {
         }
     }
 
-    const winnerResult = (playerList) => {
-        const res = " a gagné la partie !"
-        if(playerList[0].score > playerList[1].score) {
-            if(playerList[0].user != null) {
-                setWinner(playerList[0].user.pseudo + res)
-            }else {
-                setWinner("L'ordinateur" + res)
+    const winnerResult = (winner) => {
+        if (winner != null) {
+            if (winner.user != null) {
+                setWinner(winner.user.pseudo + " a gagné la partie !")
+            } else {
+                setWinner(" L'ordinateur a gagné la partie !")
             }
-        }else if(playerList[0].score < playerList[1].score) {
-            if(playerList[1].user != null) {
-                setWinner(playerList[1].user.pseudo + res)
-            }else {
-                setWinner("L'ordinateur" + res)
-            }
-        }else {
+        } else {
             setWinner("Match nul !")
         }
     }
@@ -91,6 +82,7 @@ function Shifumi() {
     useEffect(() => {
         GameService.getGame(params.id).then(e => {
             if (e.status == 200) {
+                console.log(e);
                 setGame(e.data);
             }
         })
@@ -101,13 +93,13 @@ function Shifumi() {
         <div className="h-[92vh] w-full flex ">
             <div className="flex flex-col m-4 p-4 text-center justify-between text-2xl">
                 <div className="flex-col justify-left m-2 p-2 border">
-                    <div className="font-bold">{game !== null ? (game.ia ? "Ordinateur" : game.playerList[1].user.pseudo) : ""}</div>
-                    <div>Score : <span>{game !== null ? game.playerList[1].score : ""}</span></div>
+                    <div className="font-bold">{game !== null && (game.playerList[1].user == null ? "Ordinateur" : game.playerList[1].user.pseudo)}</div>
+                    <div>Score : <span>{game !== null && (game.playerList[1].user == null ? game.playerList[1].score : "")}</span></div>
                 </div>
-                <div className="flex flex-col m-4 p-4 text-center justify-center text-2xl"><span> Manche</span><span>{ game != null ? game.manche + " / " + game.maxManche : ""}</span></div>
+                <div className="flex flex-col m-4 p-4 text-center justify-center text-2xl"><span> Manche</span><span>{game != null ? game.manche + " / " + game.maxManche : ""}</span></div>
                 <div className="flex-col justify-left m-2 p-2 border">
-                    <div className="font-bold">{game !== null ? game.playerList[0].user.pseudo : ""}</div>
-                    <div>Score : <span>{game !== null ? (game.playerList[0].score) : ""}</span></div>
+                    <div className="font-bold">{game != null && game.playerList[0].user != null ? game.playerList[0].user.pseudo : "Ordinateur"}</div>
+                    <div>Score : <span>{game !== null && (game.playerList[0] != null ? game.playerList[0].score : "")}</span></div>
                 </div>
             </div>
             <div className="flex flex-col justify-between border w-[80%] my-4 mx-auto">

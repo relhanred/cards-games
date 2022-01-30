@@ -67,7 +67,6 @@ function Register() {
 
     const signUp = (e) => {
         e.preventDefault();
-        console.log("bouton")
         if (formNotEmpty && passwordValid && validateEmail) {
             AuthService.signUp({
                 email: registerForm.email, 

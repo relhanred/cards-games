@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AuthService from '../services/auth.service';
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { setConnected, setUserPseudo, setUserEmail } from '../redux/userSlice';
+import { setConnected, setUserPseudo, setUserEmail, setUserRoles} from '../redux/userSlice';
 
 function Login() {
 
@@ -24,6 +24,7 @@ function Login() {
                 else {
                     dispatch(setUserPseudo(e.data.message));
                     dispatch(setUserEmail(e.data.result.email));
+                    dispatch(setUserRoles(e.data.result.roles))
                     dispatch(setConnected());
                     navigate("/");
                 }

@@ -1,6 +1,5 @@
 package com.jee.backend.api;
 
-import com.jee.backend.forms.BlackJackInitForm;
 import com.jee.backend.forms.InitForm;
 import com.jee.backend.model.*;
 import com.jee.backend.service.*;
@@ -46,48 +45,26 @@ public class BattleController {
         List<Player> playerList = new ArrayList<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         ApiResult<Game> apiResult = new ApiResult<>();
-        if(auth.getPrincipal() == "anonymousUser") {
+        if (auth.getPrincipal() == "anonymousUser") {
             apiResult.setResult(null);
             apiResult.setStatus(false);
             apiResult.setMessage("Vous devez être connecté pour créer une partie");
             return new ResponseEntity<>(apiResult, HttpStatus.FORBIDDEN);
         }
         User user = (User) auth.getPrincipal();
-        UserDetails newUser =  userService.loadUserByUsername(user.getEmail());
+        UserDetails newUser = userService.loadUserByUsername(user.getEmail());
         int score = 0;
         List<Card> hand = gameService.generateDeck();
         Player player = new Player((User) newUser, hand, score);
         playerList.add(player);
-        int maxPlayers = 2;
-        if(initForm.ia) {
-            hand = gameService.generateDeck();
-            player = new Player(null, hand, score);
-            playerList.add(player);
-        }
-        Game game = gameService.createGame(new Game(gameName, null, playerList, maxPlayers, initForm.manche, 0, initForm.ia));
+        hand = gameService.generateDeck();
+        player = new Player(null, hand, score);
+        playerList.add(player);
+        Game game = gameService.createGame(new Game(gameName, null, playerList, initForm.manche, 0,  GameStatus.CREATED));
         apiResult.setResult(game);
         apiResult.setStatus(true);
         apiResult.setMessage("Partie crée avec succès !");
         return new ResponseEntity<>(apiResult, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/join/{gameId}")
-    public ResponseEntity<Game> joinGame(@PathVariable("gameId") Long gameId) {
-        Game game = gameService.findGame(gameId);
-        if(game.getPlayerList().size() < game.getMaxPlayers()) {
-            int score = 0;
-            List<Card> hand = gameService.generateDeck();
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) auth.getPrincipal();
-            UserDetails newUser =  userService.loadUserByUsername(user.getEmail());
-            Player player = new Player((User) newUser, hand, score);
-            List<Player> playerList = game.getPlayerList();
-            playerList.add(player);
-            game.setPlayerList(playerList);
-            playerService.createPlayer(player);
-            gameService.updateGame(game);
-        }
-        return new ResponseEntity<>(game, HttpStatus.OK);
     }
 
     @PostMapping(value = "/game/{gameId}/play", consumes = "application/json")
@@ -120,6 +97,16 @@ public class BattleController {
         if (result == -1) {
             game.setLastWinner(null);
         }
+        if ((game.getManche() + 1) == game.getMaxManche()) {
+            game.setGameStatus(GameStatus.FINISHED);
+            if(game.getPlayerList().get(0).getScore() > game.getPlayerList().get(1).getScore()) {
+                game.setWinner(game.getPlayerList().get(0));
+            }else if(game.getPlayerList().get(0).getScore() < game.getPlayerList().get(1).getScore()) {
+                game.setWinner(game.getPlayerList().get(1));
+            }else {
+                game.setWinner(null);
+            }
+        }
         if (game.getManche() < game.getMaxManche()) {
             game.setManche(game.getManche() + 1);
         }
@@ -132,7 +119,7 @@ public class BattleController {
         return apiResult;
     }
 
-    @GetMapping("/game/all")
+    @GetMapping("/admin/game/all")
     public ResponseEntity<List<Game>> getAllGames() {
         List<Game> blackJackGames = gameService.findGamesByGameType(GameType.BATTLE);
         return new ResponseEntity<>(blackJackGames, HttpStatus.OK);

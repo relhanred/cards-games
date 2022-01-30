@@ -29,28 +29,29 @@ public class Game {
     @JoinTable(name = "game_players")
     private List<Player> playerList;
 
-    private int maxPlayers;
-
     private int maxManche;
 
     private int manche;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinTable(name = "winner_player")
+    @JoinTable(name = "last_winner_player")
     private Player lastWinner;
 
-    private boolean ia;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinTable(name = "winner")
+    private Player winner;
+
+    private GameStatus gameStatus;
 
     public Game() {}
 
-    public Game(GameType name, List<Card> deck, List<Player> playerList, int maxPlayers, int maxManche, int manche,  boolean ia) {
+    public Game(GameType name, List<Card> deck, List<Player> playerList, int maxManche, int manche,  GameStatus gameStatus) {
         this.name = name;
         this.deck = deck;
         this.playerList = playerList;
-        this.maxPlayers = maxPlayers;
         this.maxManche = maxManche;
         this.manche = manche;
-        this.ia = ia;
+        this.gameStatus = gameStatus;
     }
 
 

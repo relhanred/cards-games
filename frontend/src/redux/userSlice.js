@@ -7,6 +7,7 @@ export const userSlice = createSlice({
     user : {
       email: "",
       pseudo: "",
+      roles: []
     }
   },
   reducers: {
@@ -22,15 +23,19 @@ export const userSlice = createSlice({
     setUserPseudo: (state, pseudo) => {
       state.user.pseudo = pseudo.payload
     },
+    setUserRoles: (state, roles) => {
+      state.user.roles = roles.payload
+    },
     unsetUser:(state) => {
       state.user = {
         email : "",
         pseudo: "",
+        roles: []
       }
     }
   },
 })
 
-export const { setConnected, setDisconnected,setUserEmail, setUserPseudo, unsetUser} = userSlice.actions
+export const { setConnected, setDisconnected,setUserEmail, setUserPseudo, unsetUser,setUserRoles} = userSlice.actions
 
 export default userSlice.reducer

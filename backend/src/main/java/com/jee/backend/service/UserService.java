@@ -24,14 +24,17 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     public UserService(UserRepository userRepo, BCryptPasswordEncoder bCryptPasswordEncoder) {
-
         this.userRepository = userRepo;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public User addUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRole(Role.USER);
+        user.setRole(Role.ADMIN);
+        return userRepository.save(user);
+    }
+
+    public User updateUser(User user) {
         return userRepository.save(user);
     }
 
