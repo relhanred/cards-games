@@ -46,11 +46,6 @@ function Navbar() {
                                             <span className="text-xl lg:text-xl border-b border-b-2 p-2 border-black">Utilisateurs</span>
                                         </div>
                                     </NavLink>
-                                      <NavLink to="/user/games">
-                                        <div className="flex flex-row items-center hover:bg-slate-50 mx-2 rounded-lg cursor-pointer">
-                                            <span className="text-xl lg:text-xl border-b border-b-2 p-2 border-black">Mes parties</span>
-                                        </div>
-                                    </NavLink>
                                     {/* <NavLink to="/admin/games">
                                         <div className="flex flex-row items-center hover:bg-slate-50 p-4 rounded-lg cursor-pointer">
                                             <span className="text-xl lg:text-xl">Parties</span>
@@ -58,7 +53,14 @@ function Navbar() {
                                     </NavLink> */}
                                 </div>
                             }
-
+                            {
+                                isConnected &&
+                                <NavLink to="/user/games">
+                                    <div className="flex flex-row items-center hover:bg-slate-50 mx-2 rounded-lg cursor-pointer">
+                                        <span className="text-xl lg:text-xl border-b border-b-2 p-2 border-black">Mes parties</span>
+                                    </div>
+                                </NavLink>
+                            }
                         </div>
                         {!isConnected ?
                             <div className="flex space-x-4 items-center">
@@ -78,8 +80,8 @@ function Navbar() {
                         }
                     </div>
                 </div>
-            </nav>
-        </div>
+            </nav >
+        </div >
     );
 }
 
