@@ -28,24 +28,8 @@ function BlackJack(props) {
         })
     }, []);
 
-    // useEffect(() => {
-    //     if (computer != null && stayed == true) {
-    //         while (computer.score < 17) {
-    //             BlackJackService.pickCard(params.id, computer).then(e => {
-    //                 if (e.status == 200) {
-    //                     setTimeout(() => {
-    //                         setGame(e.data.result)
-    //                         setPlayers(e.data.result.playerList)
-    //                     }, 250);
-    //                 }
-    //             })
-    //         }
-    //     }
-    // }, []);
-
     const initGame = () => {
         BlackJackService.initGame(params.id).then(e => {
-            console.log(e);
             if (e.status == 200) {
                 setPlay(true)
                 setLost(false)
@@ -86,7 +70,6 @@ function BlackJack(props) {
     const pickCard = (player) => {
         BlackJackService.pickCard(params.id, { playerId: player.id }).then(e => {
             if (e.status == 200) {
-                console.log(e)
                 setGame(e.data.result)
                 setPlayers(e.data.result.playerList)
                 let p = e.data.result.playerList[0];

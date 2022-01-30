@@ -57,7 +57,6 @@ function AdminUsers(props) {
             password: password,
             pseudo: pseudo
         }).then(e => {
-            console.log(e)
             if(e.status == 201) {
                 setAdmin(false)
                 setPseudo("")

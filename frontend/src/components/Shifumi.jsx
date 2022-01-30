@@ -82,7 +82,6 @@ function Shifumi() {
     useEffect(() => {
         GameService.getGame(params.id).then(e => {
             if (e.status == 200) {
-                console.log(e);
                 setGame(e.data);
             }
         })

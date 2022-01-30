@@ -16,7 +16,6 @@ function UserGames(props) {
     useEffect(() => {
         GameService.getGames().then(e => {
             if (e.status == 200) {
-                console.log(e);
                 setTab(e.data.slice(((page - 1) * itemsPerPages), (((page - 1) * itemsPerPages) + itemsPerPages)))
                 setMax(e.data.length)
                 setHasCharged(true)

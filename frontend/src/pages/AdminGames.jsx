@@ -13,7 +13,6 @@ function AdminGames(props) {
 
     useEffect(() => {
         AdminService.getAllGames().then(e => {
-            console.log(e)
             setTab(e.data.result.slice(((page - 1) * itemsPerPages), (((page - 1) * itemsPerPages) + itemsPerPages)))
             setMax(e.data.length)
             setHasCharged(true)
