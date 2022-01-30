@@ -42,8 +42,13 @@ function Navbar() {
                                 (isConnected && user.roles[0] == "ADMIN") &&
                                 <div className="flex">
                                     <NavLink to="/admin/users">
-                                        <div className="flex flex-row items-center hover:bg-slate-50 rounded-md cursor-pointer ">
+                                        <div className="flex flex-row items-center hover:bg-slate-50 mx-2 rounded-md cursor-pointer ">
                                             <span className="text-xl lg:text-xl border-b border-b-2 p-2 border-black">Utilisateurs</span>
+                                        </div>
+                                    </NavLink>
+                                      <NavLink to="/user/games">
+                                        <div className="flex flex-row items-center hover:bg-slate-50 mx-2 rounded-lg cursor-pointer">
+                                            <span className="text-xl lg:text-xl border-b border-b-2 p-2 border-black">Mes parties</span>
                                         </div>
                                     </NavLink>
                                     {/* <NavLink to="/admin/games">

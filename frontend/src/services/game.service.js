@@ -20,6 +20,20 @@ class GameService {
             });
     }
 
+    getGames() {
+        return axios
+            .get(API_URL + "user", {
+                headers: authHeader(),
+                
+            })
+            .then((response) => {
+                return response;
+            })
+            .catch(e => {
+                return e.response;
+            });
+    }
+
     deleteGame(id) {
         return axios
             .delete(API_URL + id, {

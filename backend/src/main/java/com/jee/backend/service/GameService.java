@@ -47,6 +47,23 @@ public class GameService {
 
     public Game updateGame(Game game) {return gameRepository.save(game);}
 
+    public List<Game> findByUser(User user) {
+        List<Game> gameList = gameRepository.findAll();
+        List<Game> games = new ArrayList<>();
+        for(Game game : gameList) {
+            if(game.getManche() < game.getMaxManche()) {
+                for(Player p: game.getPlayerList()) {
+                    if(p.getUser() != null) {
+                        if(p.getUser().getId().longValue() == user.getId().longValue()) {
+                            games.add(game);
+                        }
+                    }
+                }
+            }
+        }
+        return games;
+    }
+
     public List<Card> generateDeck() {
         List<Card> cardList = new ArrayList<>();
         List<Symbol> blackJackSymbol = new ArrayList<>();

@@ -20,7 +20,7 @@ class AdminService {
 
     deletePlayer(id) {
         return axios
-            .delete(API_URL + "/users/admin/delete/"+ id, {
+            .delete(API_URL + "/users/admin/delete/" + id, {
                 headers: authHeader()
             })
             .then((response) => {
@@ -60,8 +60,22 @@ class AdminService {
             });
     }
 
+    addAdmin(signUpForm) {
+        return axios
+            .post(API_URL + "/users/admin/addAdmin", signUpForm, {
+                headers: authHeader()
+            })
+            .then((response) => {
+                return response;
+            })
+            .catch(e => {
+                return e.response;
+            });
+
+    }
+
     generatePdf() {
-       return API_URL + "/users/admin/pdf";
+        return API_URL + "/users/admin/pdf";
     }
 
 }

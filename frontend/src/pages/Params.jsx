@@ -16,7 +16,7 @@ function Params(props) {
     const dispatch = useDispatch();
 
     const [ia, setIa] = useState(true)
-    const [nbManche, setNbManche] = useState(5)
+    const [nbManche, setNbManche] = useState(3)
     const [nbPlayers, setNbPlayers] = useState("")
     const [error, setError] = useState(false)
 
@@ -89,7 +89,7 @@ function Params(props) {
                 <div className="flex  my-4">
                     <RiComputerLine size="400" className="text-slate-400" />
                 </div>
-                <div className={"flex flex-col my-4 "+(params.title == "blackjack" && "hidden")}>
+                <div className="flex flex-col my-4 ">
                     <label className="text-xl w-full mb-2 px-2">Manches</label>
                     <input type="number" className={"border rounded-md py-2 px-4 w-full " + ((error && (nbManche < 1 || nbManche > 52)) && "border-red-500")} value={nbManche} min="1" max="52" onChange={(e) => setNbManche(e.target.value)} />
                 </div>

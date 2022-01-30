@@ -98,8 +98,12 @@ public class UserController {
     @PostMapping(value = "/admin/addAdmin")
     public ResponseEntity<User> addAdmin(@RequestBody LoginForm userForm) {
         User user = new User(userForm.getEmail(), userForm.getPassword(), userForm.getPseudo());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
         User newUser = userService.addAdmin(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
 
     @PostMapping(value = "/auth/signin")

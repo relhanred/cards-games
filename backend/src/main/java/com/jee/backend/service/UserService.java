@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
 
     public User addUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         return userRepository.save(user);
     }
 

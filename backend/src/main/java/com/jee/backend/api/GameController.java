@@ -9,6 +9,8 @@ import com.jee.backend.service.UserService;
 import com.jee.backend.utils.ApiResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -32,6 +34,23 @@ public class GameController {
     public ResponseEntity<Game> getGame(@PathVariable("id") Long gameId) {
         Game game = gameService.findGame(gameId);
         return new ResponseEntity<>(game, HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<Game>> getGames() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth.getPrincipal() == "anonymousUser") {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        User user = (User) auth.getPrincipal();
+        System.out.println("----------------------------------------------------------");
+        System.out.println(user.getId());
+        System.out.println("----------------------------------------------------------");
+        List<Game> games = gameService.findByUser(user);
+        System.out.println("-------------SIZE LISTE --------");
+        System.out.print(games.size());
+        System.out.println("---------------------");
+        return new ResponseEntity<>(games, HttpStatus.OK);
     }
 
     @GetMapping("/admin/all")

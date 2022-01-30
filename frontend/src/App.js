@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux'
 import Profil from './pages/Profil';
 import AdminUsers from './pages/AdminUsers';
 import AdminGames from './pages/AdminGames';
+import UserGames from './pages/UserGames';
 
 function App() {
 
@@ -41,9 +42,26 @@ function App() {
             )
           }
 
-          <Route exact path="/params/:title" element={<Params />} />
-          <Route exact path="/game/:game/:id" element={<Game />} />
-          <Route exact path="/profil" element={<Profil />} />
+          {
+            (isConnected) ?
+              <Route exact path="/params/:title" element={<Params />} />
+              :
+              <Route exact path="/params/:title" element={<Error error="404" />} />
+          }
+
+          {
+            (isConnected) ?
+              <Route exact path="/game/:game/:id" element={<Game />} />
+              :
+              <Route exact path="/game/:game/:id" element={<Error error="404" />} />
+          }
+          {
+            (isConnected) ?
+              <Route exact path="/profil" element={<Profil />} />
+              :
+              <Route exact path="/profil" element={<Error error="404" />} />
+          }
+
           {
             (isConnected && user.roles[0] == "ADMIN") ?
               <Route exact path="/admin/users" element={<AdminUsers />} />
@@ -55,6 +73,13 @@ function App() {
               <Route exact path="/admin/games" element={<AdminGames />} />
               :
               <Route exact path="/admin/games" element={<Error error="403" />} />
+          }
+
+          {
+            (isConnected) ?
+              <Route exact path="/user/games" element={<UserGames />} />
+              :
+              <Route exact path="/admin/games" element={<Error error="404" />} />
           }
           <Route path="*" element={<Error error="404" />} />
         </Routes>
